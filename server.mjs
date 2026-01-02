@@ -29,7 +29,7 @@ console.log(router.routes);
 const server = createServer( async (request, response) => {
 
     const req = await customRequest(request);
-    const res = await customResponse(response);
+    const res = customResponse(response);
 
     const handler = router.find(req.method, req.pathname)
     if(handler) {
