@@ -1,11 +1,10 @@
 import { createServer } from "node:http";
+import { routes } from "./router.mjs";
 
 const server = createServer( async (req, res) => {
     res.statusCode = 200;
 
     const url = new URL(req.url, 'http://localhost');
-
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
     const chunks = []
     for await (const chunk of req) {
@@ -13,36 +12,13 @@ const server = createServer( async (req, res) => {
     }
 
     const body = Buffer.concat(chunks).toString("utf-8");
-
-    if(req.method === 'GET' && url.pathname === '/') {
-
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.end(`
-            <html>
-            <head>
-                <title>Olá Mundo!</title>
-            </head>
-                <body>
-                    <h1>Olá Mundo!</h1>
-                </body>
-            </html>
-            `)
-
-    } else if (req.method === 'POST'  && url.pathname === '/produtos') {
-
-        res.statusCode = 201;
-        res.setHeader("Content-Type", "application/json");
-        res.end(JSON.stringify({ nome: "Notebook" }));
-        
+    const handler = routes[req.method][url.pathname];
+    if(handler) {
+        handler(req, res)
     } else {
-
         res.statusCode = 404;
-        res.end('Página não encontrada!');
-
+        res.end('Não encontrada');
     }
-
-    console.log(req.method);
 
 });
 
