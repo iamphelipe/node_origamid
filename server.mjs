@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 import { Router } from "./router.mjs";
 import { customRequest } from "./custom-request.mjs";
 import { customResponse } from "./custom-response.mjs";
+import { createCourse } from "./exercicios/ex01-database.mjs";
 
 const router = new Router();
 
@@ -24,7 +25,15 @@ function postProduto(req, res){
 
 router.post('/produto', postProduto);
 
-console.log(router.routes);
+// Exercicio
+router.post('/cursos', (req, res) => {
+    try {
+        createCourse(req.body, res);
+    } catch {
+        res.status(500).end("ERRO!"); 
+    }
+})
+
 
 const server = createServer( async (request, response) => {
 
