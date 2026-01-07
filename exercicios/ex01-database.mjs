@@ -1,7 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 
 const db = new DatabaseSync("./exercicios/lms.sqlite");
-const armazenamentoCursos = [];
 
 db.exec(/* sql*/`
     PRAGMA foreign_keys = 1;
@@ -34,13 +33,17 @@ db.exec(/* sql */`
 `);
 
 export function createCourse(req, res){
-    console.log("Requisição abaixo:");
-    console.log(req);
+
     const {slug, nome, descricao} = req;
 
-    const isExist = armazenamentoCursos.find((curso) => curso === nome);
+    const cursos = db.prepare(/* sql */`
+            SELECT * FROM "cursos"
+        `).all();
 
-    if(!isExist) {
+    const isExist = cursos.map((curso) => curso.slug).find((s) => s === slug);
+    if (!isExist) {
+        console.log("Requisição abaixo:");
+        console.log(req);
         const insert = db.prepare(/* sql */ `
             INSERT OR IGNORE INTO "cursos"
                 ("slug", "nome", "descricao")
@@ -49,28 +52,38 @@ export function createCourse(req, res){
         `);
     
         insert.run(slug, nome, descricao);
-        armazenamentoCursos.push(nome);
-        res.status(201).end("Curso criado!");
+        res.status(201).end(`Curso: ${nome} criado!`);
     } else {
-        console.log(`${nome} já existe!`)
+        res.status(409).end(`O curso: ${nome} já foi criado!`); 
     }
     
 };
 
 export function createClass(req, res){
-    console.log("Requisição aula abaixo:");
-    console.log(req);
+
     const {curso_id, slug, nome} = req;
 
-    const insert = db.prepare(/* sql */ `
-        INSERT OR IGNORE INTO "aulas"
-            ("curso_id", "slug", "nome")
-        VALUES
-            (?, ?, ?)
-    `);
+    const aulas = db.prepare(/* sql */`
+        SELECT * FROM "aulas"
+        `).all()
+    
+    const isExist = aulas.map((aula) => aula.slug).find((s) => s === slug);
+    if(!isExist){
+        console.log("Requisição aula abaixo:");
+        console.log(req);
+        const insert = db.prepare(/* sql */ `
+            INSERT OR IGNORE INTO "aulas"
+                ("curso_id", "slug", "nome")
+            VALUES
+                (?, ?, ?)
+        `);
+    
+        insert.run(curso_id, slug, nome);
+        res.status(201).end(`Aula: ${nome} criada!`);
+    } else {
+        res.status(409).end(`A aula ${nome} já foi criada!`);
+    }
 
-    insert.run(curso_id, slug, nome);
-    res.status(201).end("Aula criada!");
 };
 
 export function getCourses(res){
@@ -91,7 +104,7 @@ export function getCourseSlug(req, res) {
       try {
 
         if(isExist) {
-             const curso = db.prepare(/* sql */`
+            const curso = db.prepare(/* sql */`
             SELECT * FROM "cursos" WHERE "slug" = ? 
            `).get(slug);
            res.status(200).json(curso);
@@ -100,4 +113,18 @@ export function getCourseSlug(req, res) {
         }
         
     } catch {};
+};
+
+export function getAllClassForCourse(req, res) {
+    const slug = req.query.get("curso");
+    console.log(slug);
+
+    const AllClass = db.prepare(/* sql */`
+        SELECT "a".* FROM "aulas" AS "a"
+        JOIN "cursos" AS "c" ON "c"."id" = "a"."curso_id"
+        WHERE "c"."slug" = ?
+        `).all(slug)
+
+    res.status(200).json(AllClass);
+   
 };
