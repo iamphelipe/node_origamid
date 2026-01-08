@@ -119,12 +119,36 @@ export function getAllClassForCourse(req, res) {
     const slug = req.query.get("curso");
     console.log(slug);
 
-    const AllClass = db.prepare(/* sql */`
+    const allClass = db.prepare(/* sql */`
         SELECT "a".* FROM "aulas" AS "a"
         JOIN "cursos" AS "c" ON "c"."id" = "a"."curso_id"
         WHERE "c"."slug" = ?
-        `).all(slug)
+        `).all(slug);
 
-    res.status(200).json(AllClass);
-   
+    allClass.length === 0 ? res.status(409).json("Aula não encontrada") : res.status(200).json(allClass);
+
 };
+
+export function getClass(req, res) {
+    
+    const slugCurso = req.query.get("curso");
+    const slugAula = req.query.get("slug");
+
+    const allClass = db.prepare(/* sql */`
+        SELECT * FROM "aulas"
+        `).all();
+
+    const isExist = allClass.map((c) => c.slug).find((s) => s === slugAula);
+
+    if(isExist) {
+        const classCourse = db.prepare(/* sql */`
+            SELECT "a".* FROM "aulas" AS "a"
+            JOIN "cursos" AS "c" ON "a"."curso_id" = "c"."id"
+            WHERE "a"."slug" = ? AND "c"."slug" = ?
+            `).get(slugAula, slugCurso);
+            
+            res.status(200).json(classCourse);    
+    } else {
+            res.status(409).json("Aula não encontrada!");
+    }
+}

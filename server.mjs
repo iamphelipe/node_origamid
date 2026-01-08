@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { Router } from "./router.mjs";
 import { customRequest } from "./custom-request.mjs";
 import { customResponse } from "./custom-response.mjs";
-import { createClass, createCourse, getAllClassForCourse, getCourses, getCourseSlug } from "./exercicios/ex01-database.mjs";
+import { createClass, createCourse, getAllClassForCourse, getClass, getCourses, getCourseSlug } from "./exercicios/ex01-database.mjs";
 
 const router = new Router();
 
@@ -43,7 +43,15 @@ router.get("/aulas", (req, res) => {
     try {
         getAllClassForCourse(req, res);
     } catch {
+        res.status(500).end("ERRO!");
+    }
+});
 
+router.get("/aula", (req, res) => {
+    try {
+        getClass(req, res);
+    } catch {
+        res.status(500).end("ERRO!");
     }
 });
 

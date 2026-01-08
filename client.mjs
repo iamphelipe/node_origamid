@@ -13,18 +13,18 @@
 // });
  
 // 2 - ROTA (POST /aulas)
-const response = await fetch("http://localhost:3000/aulas", {
-    method: 'POST', 
-     headers: {
-          'Content-Type': 'application/json'
-      },
-      //body: JSON.stringify({ username: 'phelipe', password: '123456' })
-      body: JSON.stringify({
-        curso_id: 3,
-        slug: 'component',
-        nome: 'Criando componentes e reutilizando.',
-      })
-});
+//  const response = await fetch("http://localhost:3000/aulas", {
+//      method: 'POST', 
+//       headers: {
+//            'Content-Type': 'application/json'
+//        },
+//        //body: JSON.stringify({ username: 'phelipe', password: '123456' })
+//        body: JSON.stringify({
+//          curso_id: 7,
+//          slug: 'responsividade',
+//          nome: 'Deixando a landing page adaptada para mobile, desktop e tablet.',
+//        })
+//  });
 
 // 3 - ROTA (GET /cursos)
 // const response = await fetch("http://localhost:3000/cursos");
@@ -33,9 +33,11 @@ const response = await fetch("http://localhost:3000/aulas", {
 //const response = await fetch("http://localhost:3000/curso?slug=typescript"); 
 
 // 5 - ROTA (GET /aulas?curso=slug_curso)
- const response2 = await fetch("http://localhost:3000/aulas?curso=react"); 
- 
-console.log(response2); 
+//const response = await fetch("http://localhost:3000/aulas?curso=react");
+
+// 6 - ROTA (GET /aula?curso=slug_curso&slug=slug_aula)
+const response = await fetch("http://localhost:3000/aula?curso=react&slug=hooks-usestate");
+console.log(response);
    
-const body = await response2.json();           
-console.log(body);    
+const body = await response.json();           
+console.log(body);      
