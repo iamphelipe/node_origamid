@@ -9,3 +9,8 @@ node --no-warnings --watch ./server.mjs
 
 <!-- Para o VSCODE entender os tipos do Node, pois vai ser usado. Ex: createServer -->
 npm i -D @types/node
+
+
+
+<!-- Conforme for passando o curso, esse será o comando para iniciar o servidor -->
+node --no-warnings --watch ./index.ts
