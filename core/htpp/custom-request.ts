@@ -15,6 +15,7 @@ export async function customRequest(request: IncomingMessage) {
     req.query = url.searchParams;
     req.pathname = url.pathname;
     req.params = {};
+    req.body = {};
 
     const chunks: Buffer[] = []
     for await (const chunk of req) {

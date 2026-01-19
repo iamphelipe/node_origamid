@@ -1,44 +1,59 @@
 import type { CustomRequest } from "./htpp/custom-request.ts";
 import type { CustomResponse } from "./htpp/custom-response.ts";
 
-type Handler = (
+export type Handler = (
   req: CustomRequest,
   res: CustomResponse,
 ) => Promise<void> | void;
 
-type RouteMap = Record<string, Handler>
+export type Midleware = (
+  req: CustomRequest,
+  res: CustomResponse,
+) => Promise<void> | void;
+
+type Routes = {
+    [method: string]: {
+        [path: string]: {
+            handler: Handler;
+            middlewares: Midleware[];
+        }
+    }
+}
+
 
 export class Router {
 
-    routes: {
-        GET: RouteMap,
-        POST: RouteMap
-    } = {
+    routes: Routes = {
         GET: {},
         POST: {},
         PUT: {},
         DELETE: {},
         HEAD: {}
+    };
+    middlewares: Midleware[] = []
+
+    get(route: string, handler: Handler, middlewares: Midleware[] = []) {
+        this.routes["GET"][route] = { handler, middlewares }
     }
 
-    get(route: string, handler: Handler) {
-        this.routes["GET"][route] = handler
+    post(route: string, handler: Handler, middlewares: Midleware[] = []) {
+        this.routes["POST"][route] = { handler, middlewares }
     }
 
-    post(route: string, handler: Handler) {
-        this.routes["POST"][route] = handler
+    put(route: string, handler: Handler, middlewares: Midleware[] = []) {
+        this.routes["PUT"][route] = { handler, middlewares }
     }
 
-    put(route: string, handler: Handler) {
-        this.routes["PUT"][route] = handler
+    delete(route: string, handler: Handler, middlewares: Midleware[] = []) {
+        this.routes["DELETE"][route] = { handler, middlewares }
     }
 
-    delete(route: string, handler: Handler) {
-        this.routes["DELETE"][route] = handler
+    head(route: string, handler: Handler, middlewares: Midleware[] = []) {
+        this.routes["HEAD"][route] = { handler, middlewares }
     }
 
-    head(route: string, handler: Handler) {
-        this.routes["HEAD"][route] = handler
+    use(middlewares: Midleware[]) {
+        this.middlewares.push(...middlewares)
     }
 
     find(method: "GET" | "POST", pathname: string){

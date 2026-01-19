@@ -2,6 +2,7 @@ import { createServer, type IncomingMessage, type ServerResponse, type Server } 
 import { Router } from "./router.ts";
 import { customRequest } from "./htpp/custom-request.ts";
 import { customResponse } from "./htpp/custom-response.ts";
+import { bodyJson } from "./middleware/body-json.ts";
 
 export class Core {
 
@@ -9,12 +10,17 @@ export class Core {
     server: Server
     constructor() {
         this.router = new Router();
+        this.router.use([bodyJson]);
         this.server = createServer(this.handler);
     }
 
     handler = async (request: IncomingMessage, response: ServerResponse) => {
         const req = await customRequest(request);
         const res = customResponse(response);
+
+        for(const middleware of this.router.middlewares) {
+            await middleware(req, res)
+        }
 
         const matched = this.router.find(req.method as "GET" | "POST" || "", req.pathname);
         if(!matched) {
@@ -23,7 +29,14 @@ export class Core {
 
         const { route, params } = matched;
         req.params = params;
-        await route(req, res)
+
+        for(const middleware of route.middlewares) {
+            await middleware(req, res)
+        }
+
+        route.middlewares
+
+        await route.handler(req, res)
 
     }
 

@@ -7,4 +7,4 @@ setTimeout(async () => {
     const response2 = await fetch(base + '/');
     console.log(response2.ok, response2.status); 
    
-}, 200); 
+}, 200);
