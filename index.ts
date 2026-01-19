@@ -1,73 +1,33 @@
 
 import { Core } from "./core/core.ts";
-import {
-  createClass,
-  createCourse,
-  getAllClassForCourse,
-  getClass,
-  getCourses,
-  getCourseSlug,
-} from "./core/database.ts";
+import { getCourseSlug } from "./core/database.ts";
 
 const core = new Core
 
-core.router.post('/cursos', (req, res) => {
+core.router.get("/curso/:slug", (req, res) => {
 
-    const { nome } = req;
-
-    try {
-        createCourse(req.body);
-        res.status(201).end(`Curso: ${nome} criado!`);
-    } catch {
-        res.status(500).end("ERRO!"); 
+    const { slug } = req.params;
+    console.log(slug);
+    const curso = getCourseSlug(slug);
+    
+    if(curso) {
+        res.status(200).json(curso);
+    } else {
+        res.status(404).json("curso não encontrado!")
     }
+
 });
 
-core.router.post('/aulas', (req, res) => {
-    const {nome} = req;
-    try {
-        createClass(req.body);
-        res.status(201).end(`Aula: ${nome} criada!`);
-    } catch {
-        res.status(500).end("ERRO!");
-    } 
-});
+core.router.get("/aula/:aula", (req, res) => {
 
-core.router.get("/cursos", (req, res) => {
-    try {
-        getCourses(res); 
-    } catch {
-        res.status(500).end("ERRO!");
-    }
-});
+    res.status(200).json("Olá")
 
-core.router.get("/curso", (req, res) => {
-    try {
-        getCourseSlug(req, res);
-    } catch {
-        res.status(500).end("ERRO!");
-    }
-});
-
-core.router.get("/aulas", (req, res) => {
-
-    try {
-        getAllClassForCourse(req, res);
-    } catch {
-        res.status(500).end("ERRO!");
-    }
-});
-
-core.router.get("/aula", (req, res) => {
-    try {
-        getClass(req, res);
-    } catch {
-        res.status(500).end("ERRO!");
-    }
 });
 
 core.router.get("/", (req, res) => {
-    res.status(200).end("Hello")
-})
+
+    res.status(200).json("Olá")
+
+});
 
 core.init();

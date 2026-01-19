@@ -14,3 +14,4 @@ npm i -D @types/node
 
 <!-- Conforme for passando o curso, esse será o comando para iniciar o servidor -->
 node --no-warnings --watch ./index.ts
+node --no-warnings --watch ./client.mjs

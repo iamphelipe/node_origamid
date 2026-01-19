@@ -61,7 +61,6 @@ export function createClass({curso_id, slug, nome}){
     const isExist = aulas.map((aula) => aula.slug).find((s) => s === slug);
     if(!isExist){
         console.log("Requisição aula abaixo:");
-        console.log(req);
         const insert = db.prepare(/* sql */ `
             INSERT OR IGNORE INTO "aulas"
                 ("curso_id", "slug", "nome")
@@ -81,26 +80,23 @@ export function getCourses(res){
     res.status(200).json(cursos);
 };
 
-export function getCourseSlug(req, res) {
-    const slug = req.query.get("slug");
+export function getCourseSlug( slug ) {
+    
     const cursos = db.prepare(/* sql */`
         SELECT * FROM "cursos"
     `).all();
 
     const isExist = cursos.map((curso) => curso.slug).find((s) => s === slug);
-    
-      try {
 
         if(isExist) {
             const curso = db.prepare(/* sql */`
             SELECT * FROM "cursos" WHERE "slug" = ? 
            `).get(slug);
-           res.status(200).json(curso);
+           return curso
         } else {
-         res.status(404).json("Not Found Course");
+            return null
         }
-        
-    } catch {};
+
 };
 
 export function getAllClassForCourse(req, res) {
