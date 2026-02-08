@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { Router } from "./router.mjs";
 import { customRequest } from "./custom-request.mjs";
 import { customResponse } from "./custom-response.mjs";
-import { createClass, createCourse, getAllClassForCourse, getClass, getCourses, getCourseSlug } from "./exercicios/ex01-database.mjs";
+import { createClass, createCourse, getAllClassForCourse, getClass, getCourses, getCourseSlug } from "./database.mjs";
 
 const router = new Router();
 
